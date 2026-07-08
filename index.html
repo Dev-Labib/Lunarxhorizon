@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUNARxHorizon OS — A calmer kind of Linux</title>
+<meta name="description" content="LUNARxHorizon OS. Ubuntu-based Linux, in two flavors: Cinema (Cinnamon) and Lite (XFCE). Built by Siham-Ur Rahman Labib.">
+<meta name="theme-color" content="#0a0e14">
+
+<meta property="og:title" content="LUNARxHorizon OS — A calmer kind of Linux">
+<meta property="og:description" content="Ubuntu-based. Two flavors: Cinema and Lite. Built for people who just want their computer to work.">
+<meta property="og:type" content="website">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0e14'/%3E%3Ctext x='50' y='68' font-family='monospace' font-weight='800' font-size='60' fill='%2300d9c0' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0e14;
+    --bg-raised: #0f1520;
+    --bg-card: #10161f;
+    --border: #1d2733;
+    --border-soft: #161d28;
+    --text: #e6edf3;
+    --text-dim: #8b96a5;
+    --text-dimmer: #5b6675;
+    --cinema: #00d9c0;
+    --cinema-dim: #00d9c022;
+    --lite: #ffb86b;
+    --lite-dim: #ffb86b22;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    pointer-events:none;
+    z-index:2;
+    background-image:repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+    opacity:0.4;
+  }
+
+  ::selection{background:var(--cinema);color:#04110f;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
+
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;}
+  ul{list-style:none;}
+
+  /* ===== SKIP LINK / FOCUS ===== */
+  .skip-link{
+    position:absolute;top:-100px;left:16px;
+    background:var(--cinema);color:#04120f;
+    padding:10px 16px;border-radius:6px;
+    font-family:var(--mono);font-size:13px;font-weight:700;
+    z-index:2000;transition:top 0.2s;
+  }
+  .skip-link:focus{top:16px;}
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--cinema);outline-offset:3px;
+  }
+
+  /* ===== BOOT SEQUENCE ===== */
+  #boot{
+    position:fixed;inset:0;
+    background:#000;
+    color:#8fe3d3;
+    font-family:var(--mono);
+    font-size:13px;
+    line-height:1.7;
+    padding:5vh 6vw;
+    z-index:1000;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    padding-bottom:15vh;
+  }
+  #boot-log{white-space:pre-wrap;}
+  #boot .ok{color:#00d9c0;}
+  #boot .cursor{display:inline-block;width:8px;background:#00d9c0;animation:blink 0.9s steps(1) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  #boot.hide{animation:bootOut 0.6s ease forwards;}
+  @keyframes bootOut{to{opacity:0;visibility:hidden;transform:scale(1.02);}}
+  #boot.skip{display:none;}
+
+  /* ===== NAV ===== */
+  header{
+    position:fixed;top:0;left:0;right:0;
+    z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 5vw;
+    backdrop-filter:blur(12px);
+    background:rgba(10,14,20,0.7);
+    border-bottom:1px solid var(--border-soft);
+    opacity:0;
+    transition:padding 0.25s ease, background 0.25s ease;
+  }
+  .logo{
+    font-family:var(--mono);
+    font-weight:800;
+    font-size:clamp(14px,1.6vw,18px);
+    letter-spacing:0.3px;
+    display:flex;align-items:center;gap:8px;
+    cursor:pointer;
+    white-space:nowrap;
+    background:none;border:none;color:var(--text);
+  }
+  .logo .dot{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--cinema);
+    box-shadow:0 0 12px var(--cinema);
+  }
+  nav.desktop-nav ul{display:flex;gap:36px;}
+  nav.desktop-nav a{
+    font-size:14px;color:var(--text-dim);
+    font-weight:500;
+    transition:color 0.2s;
+    position:relative;
+    padding:4px 0;
+  }
+  nav.desktop-nav a::after{
+    content:"";position:absolute;left:0;bottom:-4px;
+    width:0;height:1px;background:var(--cinema);
+    transition:width 0.25s;
+  }
+  nav.desktop-nav a:hover{color:var(--text);}
+  nav.desktop-nav a:hover::after{width:100%;}
+  nav.desktop-nav a.active{color:var(--cinema);}
+  nav.desktop-nav a.active::after{width:100%;}
+
+  .burger{
+    display:none;
+    width:38px;height:38px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    background:var(--bg-card);
+    color:var(--text);
+    cursor:pointer;
+    align-items:center;justify-content:center;
+    font-family:var(--mono);
+    font-size:16px;
+  }
+
+  .mobile-nav{
+    position:fixed;top:0;right:0;bottom:0;
+    width:min(78vw,320px);
+    background:var(--bg-raised);
+    border-left:1px solid var(--border);
+    z-index:200;
+    padding:100px 32px 40px;
+    transform:translateX(100%);
+    transition:transform 0.35s cubic-bezier(.16,.84,.44,1);
+  }
+  .mobile-nav.open{transform:translateX(0);}
+  .mobile-nav ul{display:flex;flex-direction:column;gap:28px;}
+  .mobile-nav a{font-family:var(--mono);font-size:17px;color:var(--text);}
+  .nav-scrim{
+    position:fixed;inset:0;background:rgba(0,0,0,0.5);
+    z-index:190;opacity:0;pointer-events:none;
+    transition:opacity 0.3s;
+  }
+  .nav-scrim.open{opacity:1;pointer-events:auto;}
+
+  @media (max-width:760px){
+    nav.desktop-nav{display:none;}
+    .burger{display:flex;}
+  }
+
+  /* ===== HERO ===== */
+  .hero{
+    min-height:100vh;
+    display:flex;flex-direction:column;
+    justify-content:center;
+    padding:0 5vw;
+    position:relative;
+  }
+  .hero-inner{max-width:900px;opacity:0;transform:translateY(20px);}
+  .status-badge{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:var(--mono);
+    font-size:12px;font-weight:600;
+    color:var(--lite);
+    background:var(--lite-dim);
+    border:1px solid rgba(255,184,107,0.35);
+    padding:9px 16px;
+    border-radius:20px;
+    margin-bottom:24px;
+    letter-spacing:0.3px;
+  }
+  .pulse-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--lite);
+    position:relative;flex-shrink:0;
+  }
+  .pulse-dot::after{
+    content:"";position:absolute;inset:-4px;
+    border-radius:50%;border:1.5px solid var(--lite);
+    animation:pulseRing 1.8s ease-out infinite;
+  }
+  @keyframes pulseRing{
+    0%{transform:scale(0.6);opacity:0.8;}
+    100%{transform:scale(1.8);opacity:0;}
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12.5px;
+    color:var(--cinema);
+    letter-spacing:2px;
+    text-transform:uppercase;
+    display:flex;align-items:center;gap:10px;
+    margin-bottom:22px;
+    flex-wrap:wrap;
+  }
+  .eyebrow .bar{width:24px;height:1px;background:var(--cinema);flex-shrink:0;}
+  h1.title{
+    font-family:var(--mono);
+    font-weight:800;
+    font-size:clamp(36px, 7.2vw, 82px);
+    line-height:1.02;
+    letter-spacing:-1.5px;
+    color:var(--text);
+    word-break:break-word;
+  }
+  h1.title .z{color:var(--cinema);}
+  .hero p.sub{
+    font-size:clamp(16px,2vw,20px);
+    color:var(--text-dim);
+    max-width:560px;
+    margin-top:26px;
+    line-height:1.6;
+  }
+  .hero-cta{display:flex;gap:16px;margin-top:44px;flex-wrap:wrap;}
+  .btn{
+    font-family:var(--mono);
+    font-size:14px;font-weight:600;
+    padding:15px 28px;
+    border-radius:6px;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:transform 0.2s, box-shadow 0.2s, background 0.2s;
+    display:inline-flex;align-items:center;gap:10px;
+  }
+  .btn-primary{background:var(--cinema);color:#04120f;}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px -6px var(--cinema);}
+  .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text);}
+  .btn-ghost:hover{border-color:var(--text-dim);transform:translateY(-2px);}
+
+  .hero-meta{
+    position:absolute;right:5vw;bottom:60px;
+    font-family:var(--mono);font-size:12px;color:var(--text-dimmer);
+    text-align:right;line-height:1.8;opacity:0;
+  }
+  @media (max-width:600px){.hero-meta{display:none;}}
+
+  .scroll-hint{
+    position:absolute;bottom:24px;left:5vw;
+    font-family:var(--mono);font-size:11px;color:var(--text-dimmer);
+    display:flex;align-items:center;gap:8px;opacity:0;
+  }
+  .scroll-hint .line{width:1px;height:28px;background:linear-gradient(var(--text-dimmer),transparent);animation:scrollLine 1.8s ease-in-out infinite;}
+  @keyframes scrollLine{0%,100%{opacity:0.3;}50%{opacity:1;}}
+
+  /* ===== SECTION SHARED ===== */
+  section{padding:140px 5vw;position:relative;}
+  @media (max-width:600px){section{padding:100px 6vw;}}
+  .section-head{max-width:640px;margin-bottom:64px;}
+  .section-head .eyebrow{margin-bottom:16px;}
+  .section-head h2{
+    font-family:var(--mono);
+    font-size:clamp(30px,4vw,46px);
+    font-weight:700;letter-spacing:-1px;line-height:1.15;
+  }
+  .section-head p{color:var(--text-dim);margin-top:16px;font-size:16px;line-height:1.6;}
+  .reveal{
+    opacity:0;transform:translateY(28px);
+    transition:opacity 0.8s cubic-bezier(.16,.84,.44,1), transform 0.8s cubic-bezier(.16,.84,.44,1);
+  }
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  /* ===== OS CARDS ===== */
+  .versions{display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+  @media (max-width:860px){.versions{grid-template-columns:1fr;}}
+
+  .os-card{
+    background:var(--bg-card);border:1px solid var(--border);
+    border-radius:12px;overflow:hidden;
+    transition:border-color 0.3s, transform 0.35s;position:relative;
+  }
+  .os-card:hover{transform:translateY(-6px);}
+  .os-card.cinema:hover{border-color:var(--cinema);}
+  .os-card.lite:hover{border-color:var(--lite);}
+
+  .os-card .titlebar{
+    display:flex;align-items:center;gap:8px;padding:14px 18px;
+    background:var(--bg-raised);border-bottom:1px solid var(--border);
+    font-family:var(--mono);font-size:12px;color:var(--text-dimmer);
+  }
+  .titlebar .tdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .titlebar .tdot.r{background:#ff5f57;}
+  .titlebar .tdot.y{background:#febc2e;}
+  .titlebar .tdot.g{background:#28c840;}
+  .titlebar .path{margin-left:8px;}
+
+  .os-card-body{padding:36px 32px 32px;}
+  @media (max-width:600px){.os-card-body{padding:28px 22px 26px;}}
+  .os-tag{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:1.5px;
+    text-transform:uppercase;padding:5px 10px;border-radius:20px;
+    display:inline-block;margin-bottom:20px;
+  }
+  .os-card.cinema .os-tag{background:var(--cinema-dim);color:var(--cinema);}
+  .os-card.lite .os-tag{background:var(--lite-dim);color:var(--lite);}
+
+  .os-card h3{font-family:var(--mono);font-size:30px;font-weight:800;letter-spacing:-0.5px;margin-bottom:14px;}
+  .os-card.cinema h3{color:var(--cinema);}
+  .os-card.lite h3{color:var(--lite);}
+
+  .os-card .desc{color:var(--text-dim);font-size:15px;line-height:1.7;margin-bottom:26px;}
+  .os-card .desc strong{color:var(--text);font-weight:600;}
+
+  .spec-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:14px 20px;
+    margin-bottom:28px;font-family:var(--mono);font-size:12.5px;
+  }
+  .spec{display:flex;flex-direction:column;gap:4px;}
+  .spec .k{color:var(--text-dimmer);letter-spacing:0.5px;}
+  .spec .v{color:var(--text);font-weight:500;}
+
+  .os-download{display:flex;align-items:center;justify-content:space-between;padding-top:22px;border-top:1px solid var(--border-soft);gap:12px;flex-wrap:wrap;}
+  .os-download .size{font-family:var(--mono);font-size:12px;color:var(--text-dimmer);}
+  .dl-btn{
+    font-family:var(--mono);font-size:13px;font-weight:700;
+    padding:11px 20px;border-radius:6px;
+    display:inline-flex;align-items:center;gap:8px;
+    transition:transform 0.2s, box-shadow 0.2s;
+    cursor:pointer;border:none;
+  }
+  .os-card.cinema .dl-btn{background:var(--cinema);color:#04120f;}
+  .os-card.lite .dl-btn{background:var(--lite);color:#1f1204;}
+  .dl-btn:hover{transform:translateY(-2px) scale(1.03);}
+  .dl-btn:disabled{opacity:0.85;cursor:default;}
+  .dl-btn-dev{
+    background:var(--bg-raised) !important;
+    color:var(--text-dim) !important;
+    border:1px solid var(--border);
+    cursor:not-allowed;
+  }
+  .dl-btn-dev:hover{transform:none !important;box-shadow:none !important;}
+  .size.dev-size{color:var(--text-dimmer);font-style:italic;}
+  .dev-note{
+    margin-top:14px;font-family:var(--mono);font-size:11.5px;
+    color:var(--text-dimmer);line-height:1.6;
+  }
+  .feat-link{
+    display:inline-block;margin-top:16px;
+    font-family:var(--mono);font-size:12.5px;font-weight:600;
+    color:var(--cinema);transition:opacity 0.2s, transform 0.2s;
+  }
+  .os-card.lite .feat-link{color:var(--lite);}
+  .feat-link:hover{opacity:0.8;transform:translateX(3px);}
+  .os-card.cinema .dl-btn:hover{box-shadow:0 6px 24px -4px var(--cinema);}
+  .os-card.lite .dl-btn:hover{box-shadow:0 6px 24px -4px var(--lite);}
+
+  /* ===== FEATURES ===== */
+  .feature-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+    background:var(--border);border:1px solid var(--border);
+    border-radius:12px;overflow:hidden;
+  }
+  @media (max-width:760px){.feature-grid{grid-template-columns:1fr;}}
+  .feature{background:var(--bg-card);padding:34px 28px;transition:background 0.25s;}
+  .feature:hover{background:var(--bg-raised);}
+  .feature .icon{font-family:var(--mono);font-size:22px;color:var(--cinema);margin-bottom:18px;display:block;}
+  .feature h4{font-size:17px;font-weight:700;margin-bottom:10px;}
+  .feature p{font-size:14px;color:var(--text-dim);line-height:1.6;}
+  .feature-wide{grid-column:1 / -1;display:flex;flex-direction:column;align-items:flex-start;}
+  @media (max-width:760px){.feature-wide{grid-column:auto;}}
+  .ai-btn{
+    font-family:var(--mono);font-size:12px;font-weight:700;
+    padding:9px 18px;border-radius:6px;
+    border:1px solid var(--cinema);background:transparent;color:var(--cinema);
+    cursor:pointer;transition:transform 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
+    margin-top:16px;display:inline-flex;align-items:center;gap:6px;
+  }
+  .ai-btn:hover{
+    background:var(--cinema);color:#04120f;
+    transform:translateY(-2px);box-shadow:0 6px 24px -4px var(--cinema);
+  }
+
+  /* ===== SPEC COMPARISON TABLE ===== */
+  .compare-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;}
+  table.compare{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13.5px;min-width:480px;}
+  table.compare th, table.compare td{padding:16px 20px;text-align:left;border-bottom:1px solid var(--border-soft);}
+  table.compare th{color:var(--text-dimmer);font-weight:600;font-size:11.5px;letter-spacing:1px;text-transform:uppercase;background:var(--bg-raised);}
+  table.compare td{color:var(--text-dim);}
+  table.compare td.row-label{color:var(--text);font-weight:500;}
+  table.compare tr:last-child td{border-bottom:none;}
+  table.compare td.cinema-col{color:var(--cinema);}
+  table.compare td.lite-col{color:var(--lite);}
+
+  /* ===== SCREENSHOTS ===== */
+  .shot-toggle{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:32px;}
+  .shot-toggle button{
+    background:var(--bg-card);color:var(--text-dim);border:none;
+    padding:10px 22px;font-family:var(--mono);font-size:13px;font-weight:600;
+    cursor:pointer;transition:background 0.2s,color 0.2s;
+  }
+  .shot-toggle button.active.cin{background:var(--cinema-dim);color:var(--cinema);}
+  .shot-toggle button.active.lit{background:var(--lite-dim);color:var(--lite);}
+
+  .shot-frame{
+    border:1px solid var(--border);border-radius:12px;overflow:hidden;
+    background:var(--bg-card);
+  }
+  .shot-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg-raised);border-bottom:1px solid var(--border);}
+  .shot-canvas{
+    aspect-ratio:16/9;position:relative;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    transition:background 0.4s;
+  }
+  .shot-canvas.cin{background:linear-gradient(135deg,#062e29,#0a0e14 60%);}
+  .shot-canvas.lit{background:linear-gradient(135deg,#2e2206,#0a0e14 60%);}
+  .mock-desktop{width:88%;height:78%;position:relative;}
+  .mock-taskbar{
+    position:absolute;bottom:0;left:0;right:0;height:15%;
+    background:rgba(16,22,31,0.9);border-top:1px solid var(--border);
+    display:flex;align-items:center;padding:0 16px;gap:10px;
+    font-family:var(--mono);font-size:11px;color:var(--text-dim);
+  }
+  .mock-taskbar .tb-dot{width:8px;height:8px;border-radius:50%;}
+  .shot-canvas.cin .mock-taskbar .tb-dot{background:var(--cinema);}
+  .shot-canvas.lit .mock-taskbar .tb-dot{background:var(--lite);}
+  .mock-window{
+    position:absolute;top:8%;left:12%;width:55%;height:65%;
+    background:var(--bg-card);border:1px solid var(--border);border-radius:8px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.6);
+    overflow:hidden;
+  }
+  .mock-window .mwbar{display:flex;gap:6px;padding:8px 12px;background:var(--bg-raised);border-bottom:1px solid var(--border);}
+  .mock-window .mwbar span{width:8px;height:8px;border-radius:50%;}
+  .mock-window .mwbar span:nth-child(1){background:#ff5f57;}
+  .mock-window .mwbar span:nth-child(2){background:#febc2e;}
+  .mock-window .mwbar span:nth-child(3){background:#28c840;}
+  .mock-window .mwbody{padding:16px;font-family:var(--mono);font-size:10px;color:var(--text-dimmer);line-height:1.8;}
+  .shot-caption{padding:16px 20px;font-family:var(--mono);font-size:12px;color:var(--text-dimmer);border-top:1px solid var(--border-soft);}
+
+  /* ===== TERMINAL DEMO ===== */
+  .term-wrap{background:#000;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 40px 100px -30px rgba(0,217,192,0.08);}
+  .term-body{padding:26px 28px;font-family:var(--mono);font-size:13.5px;line-height:1.9;min-height:280px;color:#9fb0bd;}
+  .term-body .prompt{color:var(--cinema);}
+  .term-body .out{color:#e6edf3;}
+  .term-body .comment{color:var(--text-dimmer);}
+  .term-body .joke{color:var(--lite);}
+  .term-cursor{display:inline-block;width:7px;height:15px;background:var(--cinema);vertical-align:middle;animation:blink 1s steps(1) infinite;}
+  .term-hint{padding:10px 28px 20px;font-family:var(--mono);font-size:11.5px;color:var(--text-dimmer);border-top:1px solid var(--border-soft);}
+
+  /* ===== CREDITS ===== */
+  .credits-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  @media (max-width:760px){.credits-grid{grid-template-columns:1fr;}}
+  .credit-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:32px 28px;text-align:left;transition:transform 0.3s, border-color 0.3s;}
+  .credit-card:hover{transform:translateY(-4px);border-color:var(--cinema);}
+  .credit-card .role{font-family:var(--mono);font-size:11.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dimmer);margin-bottom:16px;}
+  .credit-card .name{font-size:19px;font-weight:700;display:flex;align-items:center;gap:10px;}
+  .credit-card .name::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cinema);flex-shrink:0;}
+
+  /* ===== FAQ ===== */
+  .faq-item{border-bottom:1px solid var(--border-soft);}
+  .faq-q{
+    width:100%;text-align:left;background:none;border:none;color:var(--text);
+    padding:22px 4px;font-size:16px;font-weight:600;cursor:pointer;
+    display:flex;justify-content:space-between;align-items:center;gap:16px;
+  }
+  .faq-q .plus{font-family:var(--mono);color:var(--cinema);transition:transform 0.3s;flex-shrink:0;}
+  .faq-item.open .faq-q .plus{transform:rotate(45deg);}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height 0.35s ease, padding 0.35s ease;color:var(--text-dim);font-size:14.5px;line-height:1.7;padding:0 4px;}
+  .faq-item.open .faq-a{max-height:200px;padding-bottom:22px;}
+
+  /* ===== BACK TO TOP ===== */
+  #backTop{
+    position:fixed;bottom:28px;right:28px;
+    width:46px;height:46px;border-radius:50%;
+    background:var(--bg-card);border:1px solid var(--border);
+    color:var(--cinema);font-family:var(--mono);font-size:16px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;z-index:80;
+    opacity:0;pointer-events:none;transform:translateY(10px);
+    transition:opacity 0.3s, transform 0.3s, border-color 0.3s;
+  }
+  #backTop.show{opacity:1;pointer-events:auto;transform:translateY(0);}
+  #backTop:hover{border-color:var(--cinema);}
+
+  /* ===== FOOTER ===== */
+  footer{padding:60px 5vw 40px;border-top:1px solid var(--border-soft);text-align:center;}
+  footer .foot-logo{font-family:var(--mono);font-weight:800;font-size:15px;margin-bottom:10px;}
+  footer .foot-credit{font-family:var(--mono);font-size:12.5px;color:var(--text-dimmer);letter-spacing:0.3px;}
+  footer .foot-credit span{color:var(--cinema);}
+
+  code.inline{font-family:var(--mono);background:var(--bg-raised);padding:2px 8px;border-radius:4px;font-size:0.9em;color:var(--cinema);border:1px solid var(--border);}
+
+  .toast{
+    position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--bg-card);border:1px solid var(--cinema);color:var(--text);
+    padding:12px 22px;border-radius:8px;font-family:var(--mono);font-size:13px;
+    z-index:300;opacity:0;pointer-events:none;transition:opacity 0.3s, transform 0.3s;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<a href="#versions" class="skip-link">Skip to versions</a>
+
+<div id="boot" role="status" aria-live="polite">
+  <div id="boot-log"></div>
+</div>
+
+<div class="nav-scrim" id="navScrim"></div>
+
+<header id="siteHeader">
+  <button class="logo" id="logoBtn" aria-label="Back to top"><span class="dot"></span>LUNARxHorizon<span style="color:var(--text-dim);font-weight:500;">OS</span></button>
+  <nav class="desktop-nav" aria-label="Primary">
+    <ul>
+      <li><a href="#versions" data-nav>Versions</a></li>
+      <li><a href="#features" data-nav>Features</a></li>
+      <li><a href="#shots" data-nav>Screenshots</a></li>
+      <li><a href="#terminal" data-nav>Terminal</a></li>
+      <li><a href="#faq" data-nav>FAQ</a></li>
+      <li><a href="#credits" data-nav>Credits</a></li>
+    </ul>
+  </nav>
+  <button class="burger" id="burgerBtn" aria-label="Open menu" aria-expanded="false">☰</button>
+</header>
+
+<nav class="mobile-nav" id="mobileNav" aria-label="Mobile">
+  <ul>
+    <li><a href="#versions" data-nav-mobile>Versions</a></li>
+    <li><a href="#features" data-nav-mobile>Features</a></li>
+    <li><a href="#shots" data-nav-mobile>Screenshots</a></li>
+    <li><a href="#terminal" data-nav-mobile>Terminal</a></li>
+    <li><a href="#faq" data-nav-mobile>FAQ</a></li>
+    <li><a href="#credits" data-nav-mobile>Credits</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner" id="heroInner">
+    <div class="status-badge">
+      <span class="pulse-dot"></span>
+      Under Development · Expected Release ~June 2030
+    </div>
+    <div class="eyebrow"><span class="bar"></span>UBUNTU-BASED · FREE · OPEN SOURCE</div>
+    <h1 class="title">LUNARx<span class="z">Horizon</span> OS</h1>
+    <p class="sub">A Linux distribution built on Ubuntu's foundation, for people who want their desktop to feel <em>fast</em>, <em>quiet</em>, and entirely theirs — whether that's on a fresh workstation or a laptop that's seen better days.</p>
+    <div class="hero-cta">
+      <a href="#versions" class="btn btn-primary">Preview the versions ↓</a>
+      <a href="features.html" class="btn btn-ghost">See Features</a>
+      <a href="#terminal" class="btn btn-ghost">See what's inside</a>
+    </div>
+  </div>
+  <div class="hero-meta">
+    base: ubuntu 24.04 LTS<br>
+    kernel: linux 6.8<br>
+    arch: x86_64
+  </div>
+  <div class="scroll-hint"><div class="line"></div>scroll</div>
+</section>
+
+<section id="versions">
+  <div class="section-head reveal">
+    <div class="eyebrow"><span class="bar"></span>PICK YOUR BUILD</div>
+    <h2>One base. Two personalities.</h2>
+    <p>Same core, same stability, same package manager underneath — the difference is entirely in how it feels to sit down and use it.</p>
+  </div>
+
+  <div class="versions">
+    <div class="os-card cinema reveal">
+      <div class="titlebar"><span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span><span class="path">~/lunarxhorizon/cinema</span></div>
+      <div class="os-card-body">
+        <span class="os-tag">Cinnamon Desktop</span>
+        <h3>LUNARxHorizon OS Cinema</h3>
+        <p class="desc">The full experience. <strong>Cinema</strong> runs the Cinnamon desktop — smooth window animations, a familiar taskbar-and-menu layout, and a UI that feels like it was designed rather than assembled. Built for daily driving on modern hardware: browsing, coding, editing, streaming, all of it, without ever feeling like you're fighting the desktop to get things done.</p>
+        <div class="spec-grid">
+          <div class="spec"><span class="k">DESKTOP</span><span class="v">Cinnamon</span></div>
+          <div class="spec"><span class="k">RAM (MIN)</span><span class="v">4 GB</span></div>
+          <div class="spec"><span class="k">STORAGE</span><span class="v">25 GB</span></div>
+          <div class="spec"><span class="k">BEST FOR</span><span class="v">Daily use</span></div>
+        </div>
+        <div class="os-download">
+          <span class="size dev-size">Est. ISO size · ~2.4 GB</span>
+          <button class="dl-btn dl-btn-dev">🚧 In Development</button>
+        </div>
+        <div class="dev-note">SHA256 checksum will be published here once the first build is released.</div>
+        <a href="features.html#cinema" class="feat-link">See full feature list →</a>
+      </div>
+    </div>
+
+    <div class="os-card lite reveal">
+      <div class="titlebar"><span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span><span class="path">~/lunarxhorizon/lite</span></div>
+      <div class="os-card-body">
+        <span class="os-tag">XFCE Desktop</span>
+        <h3>LUNARxHorizon OS Lite</h3>
+        <p class="desc"><strong>Lite</strong> strips things back to what matters. Powered by XFCE, it's built to boot fast and stay fast — even on older laptops, low-RAM machines, or hardware you were told to give up on. Nothing fancy running in the background, just a clean desktop and every watt of CPU left for the work you actually opened it for.</p>
+        <div class="spec-grid">
+          <div class="spec"><span class="k">DESKTOP</span><span class="v">XFCE</span></div>
+          <div class="spec"><span class="k">RAM (MIN)</span><span class="v">1.5 GB</span></div>
+          <div class="spec"><span class="k">STORAGE</span><span class="v">12 GB</span></div>
+          <div class="spec"><span class="k">BEST FOR</span><span class="v">Older hardware</span></div>
+        </div>
+        <div class="os-download">
+          <span class="size dev-size">Est. ISO size · ~1.3 GB</span>
+          <button class="dl-btn dl-btn-dev">🚧 In Development</button>
+        </div>
+        <div class="dev-note">SHA256 checksum will be published here once the first build is released.</div>
+        <a href="features.html#lite" class="feat-link">See full feature list →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="section-head reveal">
+    <div class="eyebrow"><span class="bar"></span>WHY LUNARxHORIZON</div>
+    <h2>Built on Ubuntu. Tuned by hand.</h2>
+    <p>Every default was picked on purpose — not left as whatever the base image shipped with.</p>
+  </div>
+  <div class="feature-grid reveal">
+    <div class="feature">
+      <span class="icon">▲</span>
+      <h4>Ubuntu-grade stability</h4>
+      <p>Full access to the Ubuntu package ecosystem and APT, so anything you'd install on Ubuntu installs here too.</p>
+    </div>
+    <div class="feature">
+      <span class="icon">◆</span>
+      <h4>Tuned out of the box</h4>
+      <p>No bloatware, no mystery background services. What's installed is installed because it earns its place.</p>
+    </div>
+    <div class="feature">
+      <span class="icon">●</span>
+      <h4>Built for builders</h4>
+      <p>Dev tools, terminal setup, and sane defaults ready from first boot — made by someone who actually codes on it daily.</p>
+    </div>
+    <div class="feature">
+      <span class="icon">▲</span>
+      <h4>Two ways to run it</h4>
+      <p>Cinema for full desktops, Lite for machines running on borrowed time. Same OS underneath either way.</p>
+    </div>
+    <div class="feature">
+      <span class="icon">◆</span>
+      <h4>Rolling security updates</h4>
+      <p>Backed by Ubuntu's security patch cadence, so the base under your desktop stays current.</p>
+    </div>
+    <div class="feature">
+      <span class="icon">●</span>
+      <h4>Yours to shape</h4>
+      <p>It's still Linux. Nothing here is locked away from you — configs, themes, and the system itself are all open to tinker with.</p>
+    </div>
+    <div class="feature feature-wide">
+      <span class="icon">✦</span>
+      <h4>Built-in AI Assistant</h4>
+      <p>LUNARxHorizon OS ships with an AI assistant for quick help with commands, troubleshooting, and everyday automation — right from the desktop.</p>
+      <a href="https://dev-labib.github.io/Artificial-Intelligence-Website-/" target="_blank" rel="noopener noreferrer" class="ai-btn">What's AI? ↗</a>
+    </div>
+  </div>
+
+  <div style="margin-top:64px;" class="reveal">
+    <div class="compare-wrap">
+      <table class="compare">
+        <thead>
+          <tr><th>Spec</th><th>Cinema</th><th>Lite</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="row-label">Desktop environment</td><td class="cinema-col">Cinnamon 6.0</td><td class="lite-col">XFCE 4.18</td></tr>
+          <tr><td class="row-label">Min RAM</td><td class="cinema-col">4 GB</td><td class="lite-col">1.5 GB</td></tr>
+          <tr><td class="row-label">Recommended RAM</td><td class="cinema-col">8 GB</td><td class="lite-col">2 GB</td></tr>
+          <tr><td class="row-label">Storage needed</td><td class="cinema-col">25 GB</td><td class="lite-col">12 GB</td></tr>
+          <tr><td class="row-label">ISO size</td><td class="cinema-col">~2.4 GB</td><td class="lite-col">~1.3 GB</td></tr>
+          <tr><td class="row-label">Boot time (SSD)</td><td class="cinema-col">~16s</td><td class="lite-col">~9s</td></tr>
+          <tr><td class="row-label">Best for</td><td class="cinema-col">Modern laptops/desktops</td><td class="lite-col">Old or low-spec hardware</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="shots">
+  <div class="section-head reveal">
+    <div class="eyebrow"><span class="bar"></span>SEE IT RUNNING</div>
+    <h2>What the desktop looks like.</h2>
+    <p>A quick preview of each build's desktop layout.</p>
+  </div>
+  <div class="reveal">
+    <div class="shot-toggle">
+      <button class="active cin" id="toggleCin" data-shot="cin">Cinema</button>
+      <button id="toggleLit" data-shot="lit">Lite</button>
+    </div>
+    <div class="shot-frame">
+      <div class="shot-bar"><span class="tdot r" style="width:10px;height:10px;border-radius:50%;background:#ff5f57;display:inline-block;"></span><span class="tdot y" style="width:10px;height:10px;border-radius:50%;background:#febc2e;display:inline-block;"></span><span class="tdot g" style="width:10px;height:10px;border-radius:50%;background:#28c840;display:inline-block;"></span></div>
+      <div class="shot-canvas cin" id="shotCanvas">
+        <div class="mock-desktop">
+          <div class="mock-window">
+            <div class="mwbar"><span></span><span></span><span></span></div>
+            <div class="mwbody" id="mockWinBody">
+              $ neofetch<br>OS: LUNARxHorizon OS Cinema<br>DE: Cinnamon 6.0<br>Shell: bash 5.2<br>Uptime: 14m
+            </div>
+          </div>
+          <div class="mock-taskbar" id="mockTaskbar">
+            <span class="tb-dot"></span> Menu &nbsp;|&nbsp; Files &nbsp;|&nbsp; Terminal &nbsp;|&nbsp; Browser
+          </div>
+        </div>
+      </div>
+      <div class="shot-caption" id="shotCaption">Illustrative preview of the Cinema desktop layout — actual theme may vary by release.</div>
+    </div>
+  </div>
+</section>
+
+<section id="terminal">
+  <div class="section-head reveal">
+    <div class="eyebrow"><span class="bar"></span>UNDER THE HOOD</div>
+    <h2>Same terminal you already know.</h2>
+    <p>LUNARxHorizon doesn't hide the shell from you — it's right there, exactly as capable as any Ubuntu box.</p>
+  </div>
+  <div class="term-wrap reveal">
+    <div class="titlebar" style="border-bottom:1px solid var(--border);"><span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span><span class="path">labib@lunarxhorizon: ~</span></div>
+    <div class="term-body" id="termBody"></div>
+    <div class="term-hint">psst — try typing a command of your own once the demo finishes 👀</div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="section-head reveal">
+    <div class="eyebrow"><span class="bar"></span>GOOD TO KNOW</div>
+    <h2>Frequently asked questions</h2>
+  </div>
+  <div class="reveal" id="faqList">
+    <div class="faq-item">
+      <button class="faq-q">When will LUNARxHorizon OS be released? <span class="plus">+</span></button>
+      <div class="faq-a">It's still under active development. The approximate target for a first public release is <strong style="color:var(--text);">June 2030</strong> — that timeline may shift as things progress.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">Is LUNARxHorizon OS free? <span class="plus">+</span></button>
+      <div class="faq-a">Yes — once released, LUNARxHorizon OS will be free to download and use, just like the Ubuntu base it's built on.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">Which version should I pick? <span class="plus">+</span></button>
+      <div class="faq-a">If your machine is newer and has 4GB+ RAM, go with Cinema for the fuller desktop experience. If it's older or lower on resources, Lite will feel a lot snappier.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">Can I install regular Ubuntu apps? <span class="plus">+</span></button>
+      <div class="faq-a">Yes — LUNARxHorizon uses APT under the hood, so anything packaged for Ubuntu 24.04 will work here too.</div>
+    </div>
+  </div>
+</section>
+
+<section id="credits">
+  <div class="section-head reveal">
+    <div class="eyebrow"><span class="bar"></span>WHO BUILT THIS</div>
+    <h2>Credits</h2>
+    <p>LUNARxHorizon OS, top to bottom, is a one-person build.</p>
+  </div>
+  <div class="credits-grid reveal">
+    <div class="credit-card">
+      <div class="role">Design of OS</div>
+      <div class="name">Siham-Ur Rahman Labib</div>
+    </div>
+    <div class="credit-card">
+      <div class="role">Coding &amp; Framework</div>
+      <div class="name">Siham-Ur Rahman Labib</div>
+    </div>
+    <div class="credit-card">
+      <div class="role">Website</div>
+      <div class="name">Siham-Ur Rahman Labib</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-logo">LUNARxHorizon OS</div>
+  <div class="foot-credit">Credits <span>Siham-Ur Rahman Labib</span></div>
+</footer>
+
+<button id="backTop" aria-label="Back to top">↑</button>
+<div class="toast" id="toast"></div>
+
+<script>
+  // ================= BOOT SEQUENCE =================
+  const bootLines = [
+    "[ 0.000000] LUNARxHorizon OS bootloader initializing...",
+    "[ 0.114021] Loading kernel 6.8.0-lunarxhorizon...",
+    "[ 0.892003] Mounting root filesystem [ <span class='ok'>OK</span> ]",
+    "[ 1.203441] Starting udev...",
+    "[ 1.554120] Detecting hardware [ <span class='ok'>OK</span> ]",
+    "[ 2.019873] Initializing desktop session...",
+    "[ 2.402210] Welcome to LUNARxHorizon OS."
+  ];
+  const bootLogEl = document.getElementById('boot-log');
+  const bootEl = document.getElementById('boot');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let bLine = 0;
+  let bootFinished = false;
+
+  function finishBoot(){
+    if(bootFinished) return;
+    bootFinished = true;
+    bootEl.classList.add('hide');
+    document.body.style.overflow = 'auto';
+    startPageAnimations();
+    setTimeout(()=>{ if(bootEl.parentNode) bootEl.remove(); }, 700);
+  }
+
+  function typeBootLine(){
+    if(bLine >= bootLines.length){
+      setTimeout(finishBoot, 350);
+      return;
+    }
+    const p = document.createElement('div');
+    p.innerHTML = bootLines[bLine] + (bLine===bootLines.length-1 ? " <span class='cursor'>&nbsp;</span>" : "");
+    bootLogEl.appendChild(p);
+    bLine++;
+    setTimeout(typeBootLine, bLine===bootLines.length ? 500 : 220 + Math.random()*180);
+  }
+
+  document.body.style.overflow = 'hidden';
+
+  if(reducedMotion){
+    // Skip the boot theatre entirely for reduced-motion users
+    bootEl.classList.add('skip');
+    finishBoot();
+  } else {
+    setTimeout(typeBootLine, 300);
+    // Safety net: never let a JS hiccup trap the user behind the boot screen
+    setTimeout(finishBoot, 6000);
+  }
+
+  // ================= PAGE LOAD ANIMATIONS =================
+  function startPageAnimations(){
+    const headerEl = document.getElementById('siteHeader');
+    headerEl.style.transition = 'opacity 0.6s ease';
+    headerEl.style.opacity = '1';
+
+    const heroInner = document.getElementById('heroInner');
+    heroInner.style.transition = 'opacity 0.9s ease, transform 0.9s cubic-bezier(.16,.84,.44,1)';
+    heroInner.style.transform = 'translateY(0)';
+    heroInner.style.opacity = '1';
+
+    document.querySelector('.hero-meta').style.transition = 'opacity 1s ease 0.3s';
+    document.querySelector('.hero-meta').style.opacity = '1';
+    document.querySelector('.scroll-hint').style.transition = 'opacity 1s ease 0.5s';
+    document.querySelector('.scroll-hint').style.opacity = '1';
+
+    typeTerminal();
+  }
+
+  // ================= SCROLL REVEAL =================
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, {threshold:0.15});
+  revealEls.forEach(el=>io.observe(el));
+
+  // ================= HEADER SHRINK + ACTIVE LINK + BACK TO TOP =================
+  const header = document.getElementById('siteHeader');
+  const navLinks = document.querySelectorAll('[data-nav]');
+  const sections = ['versions','features','shots','terminal','faq','credits'].map(id=>document.getElementById(id));
+  const backTop = document.getElementById('backTop');
+
+  window.addEventListener('scroll', ()=>{
+    header.style.padding = window.scrollY > 40 ? '14px 5vw' : '20px 5vw';
+    backTop.classList.toggle('show', window.scrollY > 600);
+
+    let currentId = null;
+    sections.forEach(sec=>{
+      if(!sec) return;
+      const rect = sec.getBoundingClientRect();
+      if(rect.top <= 120 && rect.bottom >= 120) currentId = sec.id;
+    });
+    navLinks.forEach(a=>{
+      a.classList.toggle('active', a.getAttribute('href') === '#'+currentId);
+    });
+  }, {passive:true});
+
+  backTop.addEventListener('click', ()=>window.scrollTo({top:0, behavior: reducedMotion ? 'auto' : 'smooth'}));
+  document.getElementById('logoBtn').addEventListener('click', ()=>window.scrollTo({top:0, behavior: reducedMotion ? 'auto' : 'smooth'}));
+
+  // ================= MOBILE NAV =================
+  const burger = document.getElementById('burgerBtn');
+  const mobileNav = document.getElementById('mobileNav');
+  const scrim = document.getElementById('navScrim');
+
+  function toggleMobileNav(open){
+    mobileNav.classList.toggle('open', open);
+    scrim.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    burger.textContent = open ? '✕' : '☰';
+    document.body.style.overflow = open ? 'hidden' : 'auto';
+  }
+  burger.addEventListener('click', ()=>toggleMobileNav(!mobileNav.classList.contains('open')));
+  scrim.addEventListener('click', ()=>toggleMobileNav(false));
+  document.querySelectorAll('[data-nav-mobile]').forEach(a=>{
+    a.addEventListener('click', ()=>toggleMobileNav(false));
+  });
+
+  // ================= TERMINAL DEMO (fixed HTML-escaping bug) =================
+  const termCommands = [
+    {cmd:"neofetch", out:"OS: LUNARxHorizon OS Cinema<br>Kernel: 6.8.0-lunarxhorizon<br>Base: Ubuntu 24.04 LTS<br>Shell: bash 5.2<br>DE: Cinnamon 6.0"},
+    {cmd:"sudo apt update && sudo apt upgrade", out:"<span class='comment'>Reading package lists... Done</span><br>All packages are up to date."},
+    {cmd:"whoami", out:"labib"}
+  ];
+
+  function escapeHtml(str){
+    return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  function typeTerminal(){
+    const el = document.getElementById('termBody');
+    el.innerHTML = "";
+    let ci = 0;
+
+    function nextCommand(){
+      if(ci >= termCommands.length){
+        renderLivePrompt();
+        return;
+      }
+      const {cmd, out} = termCommands[ci];
+      let charI = 0;
+      const line = document.createElement('div');
+      el.appendChild(line);
+
+      function typeChar(){
+        if(charI <= cmd.length){
+          // Escape the raw command text BEFORE inserting into innerHTML,
+          // so "&&" types out cleanly instead of flashing "&amp;" mid-animation.
+          line.innerHTML = `<span class="prompt">labib@lunarxhorizon:~$</span> ${escapeHtml(cmd.slice(0,charI))}<span class="term-cursor"></span>`;
+          charI++;
+          setTimeout(typeChar, 32);
+        } else {
+          line.innerHTML = `<span class="prompt">labib@lunarxhorizon:~$</span> ${escapeHtml(cmd)}`;
+          const outLine = document.createElement('div');
+          outLine.className = 'out';
+          outLine.style.margin = '4px 0 14px';
+          outLine.innerHTML = out;
+          el.appendChild(outLine);
+          ci++;
+          setTimeout(nextCommand, 500);
+        }
+      }
+      typeChar();
+    }
+    nextCommand();
+  }
+
+  // Live, actually-typable prompt after the scripted demo finishes
+  function renderLivePrompt(){
+    const el = document.getElementById('termBody');
+    const wrap = document.createElement('div');
+    wrap.innerHTML = `<span class="prompt">labib@lunarxhorizon:~$</span> <span id="liveInput" contenteditable="true" spellcheck="false" style="outline:none;color:#e6edf3;"></span><span class="term-cursor" id="liveCursor"></span>`;
+    el.appendChild(wrap);
+    const input = wrap.querySelector('#liveInput');
+    input.focus();
+
+    const jokes = {
+      "sudo rm -rf /": "<span class='joke'>Nice try 😏 LUNARxHorizon backs up your sense of humor, not your root filesystem. Command blocked.</span>",
+      "hello": "Hey there! 👋 You found the live terminal.",
+      "help": "Try: neofetch · whoami · sudo apt update · sudo rm -rf / (don't actually) · exit",
+      "exit": "There's no escaping LUNARxHorizon. (Just close the tab. 😄)"
+    };
+
+    input.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        const typed = input.textContent.trim();
+        const resultLine = document.createElement('div');
+        resultLine.innerHTML = `<span class="prompt">labib@lunarxhorizon:~$</span> ${escapeHtml(typed)}`;
+        el.insertBefore(resultLine, wrap);
+
+        const outLine = document.createElement('div');
+        outLine.className = 'out';
+        outLine.style.margin = '4px 0 14px';
+        outLine.innerHTML = jokes[typed.toLowerCase()] || `bash: ${escapeHtml(typed) || ' '}: command not found`;
+        el.insertBefore(outLine, wrap);
+
+        input.textContent = '';
+        el.scrollTop = el.scrollHeight;
+      }
+    });
+  }
+
+  // ================= TOAST HELPER =================
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(showToast._tid);
+    showToast._tid = setTimeout(()=>t.classList.remove('show'), 2600);
+  }
+
+  // Dev-status buttons: gentle confirmation on click, nothing to download yet
+  document.querySelectorAll('.dl-btn-dev').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      showToast('Still cooking 👨‍🍳 — expected release ~June 2030.');
+    });
+  });
+
+  // ================= SCREENSHOT TOGGLE =================
+  const toggleCin = document.getElementById('toggleCin');
+  const toggleLit = document.getElementById('toggleLit');
+  const shotCanvas = document.getElementById('shotCanvas');
+  const mockWinBody = document.getElementById('mockWinBody');
+  const shotCaption = document.getElementById('shotCaption');
+
+  function setShot(mode){
+    const isCin = mode === 'cin';
+    shotCanvas.classList.toggle('cin', isCin);
+    shotCanvas.classList.toggle('lit', !isCin);
+    toggleCin.classList.toggle('active', isCin);
+    toggleCin.classList.toggle('cin', isCin);
+    toggleLit.classList.toggle('active', !isCin);
+    toggleLit.classList.toggle('lit', !isCin);
+    mockWinBody.innerHTML = isCin
+      ? "$ neofetch<br>OS: LUNARxHorizon OS Cinema<br>DE: Cinnamon 6.0<br>Shell: bash 5.2<br>Uptime: 14m"
+      : "$ neofetch<br>OS: LUNARxHorizon OS Lite<br>DE: XFCE 4.18<br>Shell: bash 5.2<br>Uptime: 9m";
+    shotCaption.textContent = isCin
+      ? "Illustrative preview of the Cinema desktop layout — actual theme may vary by release."
+      : "Illustrative preview of the Lite desktop layout — built for speed over decoration.";
+  }
+  toggleCin.addEventListener('click', ()=>setShot('cin'));
+  toggleLit.addEventListener('click', ()=>setShot('lit'));
+
+  // ================= FAQ ACCORDION =================
+  document.querySelectorAll('.faq-item').forEach(item=>{
+    const q = item.querySelector('.faq-q');
+    q.addEventListener('click', ()=>{
+      const alreadyOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));
+      if(!alreadyOpen) item.classList.add('open');
+    });
+  });
+</script>
+
+</body>
+</html>

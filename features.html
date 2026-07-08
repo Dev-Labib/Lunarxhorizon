@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Features — LUNARxHorizon OS</title>
+<meta name="description" content="Full feature breakdown for LUNARxHorizon OS Cinema (Cinnamon) and Lite (XFCE) editions.">
+<meta name="theme-color" content="#0a0e14">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0e14'/%3E%3Ctext x='50' y='68' font-family='monospace' font-weight='800' font-size='60' fill='%2300d9c0' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0e14;
+    --bg-raised: #0f1520;
+    --bg-card: #10161f;
+    --border: #1d2733;
+    --border-soft: #161d28;
+    --text: #e6edf3;
+    --text-dim: #8b96a5;
+    --text-dimmer: #5b6675;
+    --cinema: #00d9c0;
+    --cinema-dim: #00d9c022;
+    --lite: #ffb86b;
+    --lite-dim: #ffb86b22;
+    --shared: #b39ddb;
+    --shared-dim: #b39ddb1f;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:hidden;}
+  ::selection{background:var(--cinema);color:#04110f;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;}
+  ul{list-style:none;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
+
+  a:focus-visible, button:focus-visible, input:focus-visible{outline:2px solid var(--cinema);outline-offset:3px;}
+
+  /* ===== HEADER ===== */
+  header{
+    position:sticky;top:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 5vw;
+    backdrop-filter:blur(12px);
+    background:rgba(10,14,20,0.85);
+    border-bottom:1px solid var(--border-soft);
+  }
+  .logo{
+    font-family:var(--mono);font-weight:800;font-size:clamp(14px,1.6vw,17px);
+    display:flex;align-items:center;gap:8px;white-space:nowrap;
+  }
+  .logo .dot{width:9px;height:9px;border-radius:50%;background:var(--cinema);box-shadow:0 0 12px var(--cinema);flex-shrink:0;}
+  .back-link{
+    font-family:var(--mono);font-size:13px;color:var(--text-dim);
+    display:flex;align-items:center;gap:8px;transition:color 0.2s;
+  }
+  .back-link:hover{color:var(--text);}
+
+  /* ===== PAGE HERO ===== */
+  .page-hero{padding:80px 5vw 40px;max-width:1100px;}
+  .status-badge{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:var(--mono);font-size:12px;font-weight:600;color:var(--lite);
+    background:var(--lite-dim);border:1px solid rgba(255,184,107,0.35);
+    padding:8px 15px;border-radius:20px;margin-bottom:22px;
+  }
+  .pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--lite);position:relative;flex-shrink:0;}
+  .pulse-dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1.5px solid var(--lite);animation:pulseRing 1.8s ease-out infinite;}
+  @keyframes pulseRing{0%{transform:scale(0.6);opacity:0.8;}100%{transform:scale(1.8);opacity:0;}}
+
+  .page-hero h1{
+    font-family:var(--mono);font-weight:800;font-size:clamp(32px,5.5vw,58px);
+    letter-spacing:-1px;line-height:1.08;margin-bottom:18px;
+  }
+  .page-hero p{color:var(--text-dim);font-size:16px;max-width:640px;line-height:1.65;}
+
+  /* ===== EDITION SWITCHER ===== */
+  .switcher-wrap{
+    position:sticky;top:65px;z-index:90;
+    background:rgba(10,14,20,0.92);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border-soft);
+    padding:14px 5vw;
+  }
+  .switcher{
+    display:flex;gap:8px;max-width:1100px;
+    overflow-x:auto;scrollbar-width:none;
+  }
+  .switcher::-webkit-scrollbar{display:none;}
+  .switch-btn{
+    font-family:var(--mono);font-size:13px;font-weight:700;
+    padding:10px 20px;border-radius:8px;border:1px solid var(--border);
+    background:var(--bg-card);color:var(--text-dim);
+    cursor:pointer;white-space:nowrap;
+    transition:background 0.2s, color 0.2s, border-color 0.2s;
+    display:flex;align-items:center;gap:8px;
+  }
+  .switch-btn .sw-dot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:0.6;}
+  .switch-btn.active.cin{background:var(--cinema-dim);color:var(--cinema);border-color:var(--cinema);}
+  .switch-btn.active.lit{background:var(--lite-dim);color:var(--lite);border-color:var(--lite);}
+  .switch-btn.active.shr{background:var(--shared-dim);color:var(--shared);border-color:var(--shared);}
+
+  /* ===== SEARCH ===== */
+  .search-wrap{padding:28px 5vw 0;max-width:1100px;}
+  .search-box{
+    display:flex;align-items:center;gap:10px;
+    background:var(--bg-card);border:1px solid var(--border);
+    border-radius:8px;padding:12px 16px;
+    font-family:var(--mono);font-size:13.5px;
+  }
+  .search-box input{
+    flex:1;background:none;border:none;color:var(--text);
+    font-family:var(--mono);font-size:13.5px;outline:none;
+  }
+  .search-box input::placeholder{color:var(--text-dimmer);}
+  .search-count{font-family:var(--mono);font-size:11.5px;color:var(--text-dimmer);margin-top:10px;}
+
+  /* ===== EDITION PANELS ===== */
+  main{padding:36px 5vw 100px;max-width:1100px;}
+  .edition-panel{display:none;}
+  .edition-panel.active{display:block;}
+
+  .edition-intro{
+    display:flex;align-items:center;gap:16px;margin-bottom:36px;
+    padding:22px 26px;border-radius:12px;border:1px solid var(--border);
+    background:var(--bg-card);
+  }
+  .edition-intro .ei-icon{
+    width:48px;height:48px;border-radius:10px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;
+  }
+  .edition-panel.cinema .ei-icon{background:var(--cinema-dim);}
+  .edition-panel.lite .ei-icon{background:var(--lite-dim);}
+  .edition-panel.shared .ei-icon{background:var(--shared-dim);}
+  .edition-intro h2{font-family:var(--mono);font-size:22px;font-weight:800;margin-bottom:4px;}
+  .edition-panel.cinema .edition-intro h2{color:var(--cinema);}
+  .edition-panel.lite .edition-intro h2{color:var(--lite);}
+  .edition-panel.shared .edition-intro h2{color:var(--shared);}
+  .edition-intro .tagline{color:var(--text-dim);font-size:14px;font-style:italic;}
+
+  /* ===== CATEGORY GROUPS ===== */
+  .category{margin-bottom:36px;}
+  .category-head{
+    display:flex;align-items:center;gap:12px;margin-bottom:16px;
+    font-family:var(--mono);font-size:15px;font-weight:700;
+  }
+  .category-head .cat-emoji{font-size:18px;}
+  .category-head .cat-count{
+    font-size:11px;color:var(--text-dimmer);font-weight:500;
+    background:var(--bg-card);border:1px solid var(--border);
+    padding:2px 9px;border-radius:12px;
+  }
+
+  .feat-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+    gap:10px;
+  }
+  .feat-chip{
+    display:flex;align-items:center;gap:10px;
+    background:var(--bg-card);border:1px solid var(--border);
+    border-radius:8px;padding:12px 14px;
+    font-size:13.5px;color:var(--text);
+    transition:border-color 0.2s, transform 0.2s, background 0.2s;
+  }
+  .feat-chip:hover{transform:translateY(-2px);}
+  .edition-panel.cinema .feat-chip:hover{border-color:var(--cinema);}
+  .edition-panel.lite .feat-chip:hover{border-color:var(--lite);}
+  .edition-panel.shared .feat-chip:hover{border-color:var(--shared);}
+  .feat-chip .fc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  .edition-panel.cinema .feat-chip .fc-dot{background:var(--cinema);}
+  .edition-panel.lite .feat-chip .fc-dot{background:var(--lite);}
+  .edition-panel.shared .feat-chip .fc-dot{background:var(--shared);}
+  .feat-chip.hidden{display:none;}
+  .feat-chip mark{background:none;color:inherit;font-weight:800;text-decoration:underline;text-decoration-color:currentColor;}
+
+  .category.hidden{display:none;}
+
+  /* ===== HARDWARE TARGETS (Lite only) ===== */
+  .hw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;}
+  .hw-chip{
+    background:var(--lite-dim);border:1px solid rgba(255,184,107,0.3);
+    border-radius:8px;padding:14px;text-align:center;
+    font-family:var(--mono);font-size:13px;color:var(--lite);font-weight:600;
+  }
+
+  /* ===== EMPTY STATE ===== */
+  .empty-state{
+    text-align:center;padding:60px 20px;color:var(--text-dimmer);
+    font-family:var(--mono);font-size:14px;display:none;
+  }
+  .empty-state.show{display:block;}
+
+  /* ===== FOOTER ===== */
+  footer{padding:50px 5vw 40px;border-top:1px solid var(--border-soft);text-align:center;}
+  footer .foot-logo{font-family:var(--mono);font-weight:800;font-size:15px;margin-bottom:10px;}
+  footer .foot-credit{font-family:var(--mono);font-size:12.5px;color:var(--text-dimmer);}
+  footer .foot-credit span{color:var(--cinema);}
+
+  @media (max-width:600px){
+    .page-hero{padding:60px 6vw 30px;}
+    main{padding:30px 6vw 80px;}
+    .edition-intro{flex-direction:column;text-align:center;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="dot"></span>LUNARxHorizon<span style="color:var(--text-dim);font-weight:500;">OS</span></div>
+  <a href="index.html" class="back-link">← Back to home</a>
+</header>
+
+<div class="page-hero">
+  <div class="status-badge"><span class="pulse-dot"></span>Under Development · Expected Release ~June 2030</div>
+  <h1>Every feature, laid out.</h1>
+  <p>The full plan for both editions — what's shared, and what makes Cinema and Lite feel like two different machines running the same OS. This is the roadmap being built toward, not a changelog of what's shipped yet.</p>
+</div>
+
+<div class="switcher-wrap">
+  <div class="switcher">
+    <button class="switch-btn active cin" data-panel="cinema"><span class="sw-dot"></span>Cinema</button>
+    <button class="switch-btn lit" data-panel="lite"><span class="sw-dot"></span>Lite</button>
+    <button class="switch-btn shr" data-panel="shared"><span class="sw-dot"></span>Shared by Both</button>
+  </div>
+</div>
+
+<div class="search-wrap">
+  <div class="search-box">
+    🔍 <input type="text" id="searchInput" placeholder="Search features across all editions… e.g. 'docker', 'firewall', 'RAM'">
+  </div>
+  <div class="search-count" id="searchCount"></div>
+</div>
+
+<main>
+  <!-- ================= CINEMA PANEL ================= -->
+  <section class="edition-panel cinema active" id="cinema">
+    <div class="edition-intro">
+      <div class="ei-icon">🎬</div>
+      <div>
+        <h2>LUNARxHorizon Cinema — Cinnamon Edition</h2>
+        <div class="tagline">"A calmer kind of Linux."</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="ux">
+      <div class="category-head"><span class="cat-emoji">🎨</span>User Experience<span class="cat-count">9</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>Modern Cinnamon desktop</div>
+        <div class="feat-chip"><span class="fc-dot"></span>LUNAR Dark &amp; Light themes</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Blur and transparency effects</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Rounded corners</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Smooth window animations</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Dynamic wallpapers</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Curated icon pack</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Plymouth boot animation</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Custom login screen</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="perf">
+      <div class="category-head"><span class="cat-emoji">⚡</span>Performance<span class="cat-count">6</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>Optimized for modern PCs</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Fast boot time</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Low idle RAM usage</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Background service optimization</div>
+        <div class="feat-chip"><span class="fc-dot"></span>SSD optimization</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Improved battery life</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="ai">
+      <div class="category-head"><span class="cat-emoji">🤖</span>AI Features<span class="cat-count">5</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>Built-in LUNAR AI Assistant</div>
+        <div class="feat-chip"><span class="fc-dot"></span>AI Terminal Helper</div>
+        <div class="feat-chip"><span class="fc-dot"></span>AI code suggestions</div>
+        <div class="feat-chip"><span class="fc-dot"></span>AI document summarizer</div>
+        <div class="feat-chip"><span class="fc-dot"></span>AI translator</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="dev">
+      <div class="category-head"><span class="cat-emoji">💻</span>Developer Tools<span class="cat-count">8</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>Git preinstalled</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Python</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Node.js</div>
+        <div class="feat-chip"><span class="fc-dot"></span>GCC &amp; G++</div>
+        <div class="feat-chip"><span class="fc-dot"></span>VS Code installer</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Docker support</div>
+        <div class="feat-chip"><span class="fc-dot"></span>SSH tools</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Android ADB &amp; Fastboot</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="sec">
+      <div class="category-head"><span class="cat-emoji">🔒</span>Privacy &amp; Security<span class="cat-count">6</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>No telemetry</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Firewall enabled by default</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Secure updates</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Flatpak sandboxing</div>
+        <div class="feat-chip"><span class="fc-dot"></span>App permissions manager</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Privacy Dashboard</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="soft">
+      <div class="category-head"><span class="cat-emoji">📦</span>Software Included<span class="cat-count">9</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>Firefox</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Brave (optional)</div>
+        <div class="feat-chip"><span class="fc-dot"></span>VLC</div>
+        <div class="feat-chip"><span class="fc-dot"></span>LibreOffice</div>
+        <div class="feat-chip"><span class="fc-dot"></span>GIMP</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Thunderbird</div>
+        <div class="feat-chip"><span class="fc-dot"></span>GNOME Boxes</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Flatpak support</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Snap (optional)</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="gaming">
+      <div class="category-head"><span class="cat-emoji">🎮</span>Gaming<span class="cat-count">5</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>Steam installer</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Proton support</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Lutris installer</div>
+        <div class="feat-chip"><span class="fc-dot"></span>MangoHud</div>
+        <div class="feat-chip"><span class="fc-dot"></span>GameMode</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="media">
+      <div class="category-head"><span class="cat-emoji">🎵</span>Multimedia<span class="cat-count">4</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>Media codecs preinstalled</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Hardware acceleration</div>
+        <div class="feat-chip"><span class="fc-dot"></span>OBS Studio installer</div>
+        <div class="feat-chip"><span class="fc-dot"></span>FFmpeg tools</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="custom">
+      <div class="category-head"><span class="cat-emoji">🎯</span>Custom LUNAR Tools<span class="cat-count">10</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>LUNAR Welcome Center</div>
+        <div class="feat-chip"><span class="fc-dot"></span>LUNAR Software Center</div>
+        <div class="feat-chip"><span class="fc-dot"></span>LUNAR Update Manager</div>
+        <div class="feat-chip"><span class="fc-dot"></span>LUNAR Theme Manager</div>
+        <div class="feat-chip"><span class="fc-dot"></span>LUNAR Driver Manager</div>
+        <div class="feat-chip"><span class="fc-dot"></span>One-click NVIDIA driver installer</div>
+        <div class="feat-chip"><span class="fc-dot"></span>One-click developer setup</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Restore Point Manager</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Recovery Mode</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Curated wallpaper collection</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LITE PANEL ================= -->
+  <section class="edition-panel lite" id="lite">
+    <div class="edition-intro">
+      <div class="ei-icon">⚡</div>
+      <div>
+        <h2>LUNARxHorizon Lite — XFCE Edition</h2>
+        <div class="tagline">"Lightweight. Fast. Reliable."</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="perf">
+      <div class="category-head"><span class="cat-emoji">🚀</span>Performance<span class="cat-count">7</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>Ultra-lightweight XFCE desktop</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Extremely fast boot</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Optimized for older hardware</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Low CPU usage</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Very low RAM usage</div>
+        <div class="feat-chip"><span class="fc-dot"></span>SSD and HDD optimized</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Battery optimized</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="desktop">
+      <div class="category-head"><span class="cat-emoji">🖥️</span>Desktop<span class="cat-count">6</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>Clean Windows-like layout</div>
+        <div class="feat-chip"><span class="fc-dot"></span>LUNAR Lite theme</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Beautiful icons</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Simple animations</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Fast application launcher</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Workspace support</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="apps">
+      <div class="category-head"><span class="cat-emoji">🔧</span>Essential Apps<span class="cat-count">7</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>Firefox</div>
+        <div class="feat-chip"><span class="fc-dot"></span>LibreOffice</div>
+        <div class="feat-chip"><span class="fc-dot"></span>VLC</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Mousepad Editor</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Thunar File Manager</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Archive Manager</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Screenshot Tool</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="dev">
+      <div class="category-head"><span class="cat-emoji">💻</span>Developer Ready<span class="cat-count">7</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>Git</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Python</div>
+        <div class="feat-chip"><span class="fc-dot"></span>GCC</div>
+        <div class="feat-chip"><span class="fc-dot"></span>SSH</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Curl</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Wget</div>
+        <div class="feat-chip"><span class="fc-dot"></span>ADB &amp; Fastboot (optional)</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="sec">
+      <div class="category-head"><span class="cat-emoji">🔒</span>Security<span class="cat-count">5</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>Firewall enabled</div>
+        <div class="feat-chip"><span class="fc-dot"></span>No telemetry</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Secure updates</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Sandboxed Flatpak apps</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Privacy Dashboard</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="soft">
+      <div class="category-head"><span class="cat-emoji">📦</span>Software Support<span class="cat-count">4</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>Flatpak enabled</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Optional Snap support</div>
+        <div class="feat-chip"><span class="fc-dot"></span>LUNAR Software Center</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Easy package installer</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="custom">
+      <div class="category-head"><span class="cat-emoji">🎯</span>Lite Features<span class="cat-count">6</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>LUNAR Welcome</div>
+        <div class="feat-chip"><span class="fc-dot"></span>One-click app installer</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Driver installer</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Backup tool</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Recovery mode</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Lightweight wallpapers</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="hardware">
+      <div class="category-head"><span class="cat-emoji">💾</span>Perfect Hardware Targets<span class="cat-count">7</span></div>
+      <div class="hw-grid">
+        <div class="hw-chip">2 GB RAM PCs</div>
+        <div class="hw-chip">4 GB RAM laptops</div>
+        <div class="hw-chip">Old Intel Core i3</div>
+        <div class="hw-chip">Intel Pentium</div>
+        <div class="hw-chip">AMD A-Series</div>
+        <div class="hw-chip">Virtual Machines</div>
+        <div class="hw-chip">School computers</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SHARED PANEL ================= -->
+  <section class="edition-panel shared" id="shared">
+    <div class="edition-intro">
+      <div class="ei-icon">🌌</div>
+      <div>
+        <h2>Shared by Both Editions</h2>
+        <div class="tagline">The same foundation, no matter which one you pick.</div>
+      </div>
+    </div>
+
+    <div class="category" data-cat="foundation">
+      <div class="category-head"><span class="cat-emoji">🌙</span>Foundation<span class="cat-count">18</span></div>
+      <div class="feat-grid">
+        <div class="feat-chip"><span class="fc-dot"></span>Ubuntu LTS base</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Long-Term Support (LTS)</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Flatpak support</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Privacy-focused</div>
+        <div class="feat-chip"><span class="fc-dot"></span>No ads</div>
+        <div class="feat-chip"><span class="fc-dot"></span>No telemetry</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Fast updates</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Beautiful LUNAR branding</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Beginner-friendly</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Developer-friendly</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Windows migration tools</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Documentation</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Multi-language support</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Accessibility features</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Automatic backups</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Driver Manager</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Secure Boot support</div>
+        <div class="feat-chip"><span class="fc-dot"></span>Linux kernel optimizations</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="empty-state" id="emptyState">No features match your search. Try a different keyword — or check the other editions above.</div>
+</main>
+
+<footer>
+  <div class="foot-logo">LUNARxHorizon OS</div>
+  <div class="foot-credit">Credits <span>Siham-Ur Rahman Labib</span></div>
+</footer>
+
+<script>
+  // ================= EDITION SWITCHER =================
+  const switchBtns = document.querySelectorAll('.switch-btn');
+  const panels = document.querySelectorAll('.edition-panel');
+
+  function setPanel(id){
+    panels.forEach(p => p.classList.toggle('active', p.id === id));
+    switchBtns.forEach(b => b.classList.toggle('active', b.dataset.panel === id));
+    // Re-run search filter on the newly visible panel
+    applySearch();
+  }
+  switchBtns.forEach(btn=>{
+    btn.addEventListener('click', ()=> setPanel(btn.dataset.panel));
+  });
+
+  // ================= SEARCH / FILTER =================
+  const searchInput = document.getElementById('searchInput');
+  const searchCount = document.getElementById('searchCount');
+  const emptyState = document.getElementById('emptyState');
+
+  function applySearch(){
+    const query = searchInput.value.trim().toLowerCase();
+    const activePanel = document.querySelector('.edition-panel.active');
+    if(!activePanel) return;
+
+    const categories = activePanel.querySelectorAll('.category');
+    let totalVisible = 0;
+
+    categories.forEach(cat=>{
+      const chips = cat.querySelectorAll('.feat-chip, .hw-chip');
+      let catVisible = 0;
+      chips.forEach(chip=>{
+        const text = chip.textContent.toLowerCase();
+        const match = query === '' || text.includes(query);
+        chip.classList.toggle('hidden', !match);
+        if(match) catVisible++;
+      });
+      cat.classList.toggle('hidden', catVisible === 0);
+      totalVisible += catVisible;
+    });
+
+    if(query === ''){
+      searchCount.textContent = '';
+    } else {
+      searchCount.textContent = `${totalVisible} feature${totalVisible===1?'':'s'} match "${searchInput.value.trim()}" in this edition`;
+    }
+    emptyState.classList.toggle('show', query !== '' && totalVisible === 0);
+  }
+
+  searchInput.addEventListener('input', applySearch);
+
+  // Deep-link support: features.html#cinema or #lite — runs LAST, after
+  // setPanel/applySearch and all the consts they depend on are declared.
+  // (Previously this ran before searchInput/searchCount/emptyState existed,
+  // which threw a ReferenceError and silently broke the whole script.)
+  const hash = window.location.hash.replace('#','');
+  if(hash === 'cinema' || hash === 'lite' || hash === 'shared'){
+    setPanel(hash);
+  }
+</script>
+
+</body>
+</html>
