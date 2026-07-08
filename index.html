@@ -537,7 +537,7 @@
   <nav class="desktop-nav" aria-label="Primary">
     <ul>
       <li><a href="#versions" data-nav>Versions</a></li>
-      <li><a href="#features" data-nav>Features</a></li>
+      <li><a href="features.html" data-nav>Features</a></li>
       <li><a href="#shots" data-nav>Screenshots</a></li>
       <li><a href="#terminal" data-nav>Terminal</a></li>
       <li><a href="#faq" data-nav>FAQ</a></li>
@@ -550,7 +550,7 @@
 <nav class="mobile-nav" id="mobileNav" aria-label="Mobile">
   <ul>
     <li><a href="#versions" data-nav-mobile>Versions</a></li>
-    <li><a href="#features" data-nav-mobile>Features</a></li>
+    <li><a href="features.html" data-nav-mobile>Features</a></li>
     <li><a href="#shots" data-nav-mobile>Screenshots</a></li>
     <li><a href="#terminal" data-nav-mobile>Terminal</a></li>
     <li><a href="#faq" data-nav-mobile>FAQ</a></li>
@@ -674,7 +674,7 @@
       <span class="icon">✦</span>
       <h4>Built-in AI Assistant</h4>
       <p>LUNARxHorizon OS ships with an AI assistant for quick help with commands, troubleshooting, and everyday automation — right from the desktop.</p>
-      <a href="https://dev-labib.github.io/AiWeb/" target="_blank" rel="noopener noreferrer" class="ai-btn">What's AI? ↗</a>
+      <a href="https://dev-labib.github.io/Artificial-Intelligence-Website-/" target="_blank" rel="noopener noreferrer" class="ai-btn">What's AI? ↗</a>
     </div>
   </div>
 
@@ -976,7 +976,16 @@
     wrap.innerHTML = `<span class="prompt">labib@lunarxhorizon:~$</span> <span id="liveInput" contenteditable="true" spellcheck="false" style="outline:none;color:#e6edf3;"></span><span class="term-cursor" id="liveCursor"></span>`;
     el.appendChild(wrap);
     const input = wrap.querySelector('#liveInput');
-    input.focus();
+
+    // Only steal focus if the terminal is actually on-screen right now.
+    // Without this check, focusing an off-screen element forces the browser
+    // to auto-scroll the whole page down to it — which is what was yanking
+    // people to the terminal section right after the boot animation finished.
+    const termRect = document.getElementById('terminal').getBoundingClientRect();
+    const isTerminalVisible = termRect.top < window.innerHeight && termRect.bottom > 0;
+    if(isTerminalVisible){
+      input.focus({preventScroll: true});
+    }
 
     const jokes = {
       "sudo rm -rf /": "<span class='joke'>Nice try 😏 LUNARxHorizon backs up your sense of humor, not your root filesystem. Command blocked.</span>",
